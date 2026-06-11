@@ -29,8 +29,8 @@ export function initFeaturedSlider() {
   const featuredWrapper = document.getElementById("featured-wrapper");
 
   for (const property of featuredProperties) {
-    const el = document.createElement("div");
-    el.className = "swiper-slide";
+    const slide = document.createElement("div");
+    slide.className = "swiper-slide";
 
     const slideWrapper = document.createElement("div");
     slideWrapper.className = "slide-wrapper";
@@ -55,8 +55,8 @@ export function initFeaturedSlider() {
     slideWrapper.appendChild(overlayElement);
     slideWrapper.appendChild(imageElement);
     slideWrapper.appendChild(detailsElement);
-    el.appendChild(slideWrapper);
-    featuredWrapper.appendChild(el);
+    slide.appendChild(slideWrapper);
+    featuredWrapper.appendChild(slide);
   }
 
   const featuredSwiper = new Swiper(".swiper.featured", {
