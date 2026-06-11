@@ -36,6 +36,26 @@ export function initCitiesSlider() {
     citiesWrapper.appendChild(slide);
   }
 
+  //dupe
+  for (const city of cityImages) {
+    const slide = document.createElement("div");
+    slide.className = "swiper-slide city";
+
+    const imageElement = document.createElement("img");
+    imageElement.src = city.source_url;
+    imageElement.className = "city-image";
+    imageElement.id = `slide-${city.name}`;
+
+    const detailsElement = document.createElement("div");
+    detailsElement.className = "city-details";
+    detailsElement.innerText = `${city.name}`;
+
+    slide.appendChild(imageElement);
+    slide.appendChild(detailsElement);
+
+    citiesWrapper.appendChild(slide);
+  }
+
   // const el = document.createElement("div");
   // el.className = "swiper-slide";
   // el.textContent = "TEST_SLIDER";

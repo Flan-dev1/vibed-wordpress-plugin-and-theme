@@ -57,6 +57,10 @@ export function initFeaturedSlider() {
     slideWrapper.appendChild(detailsElement);
     slide.appendChild(slideWrapper);
     featuredWrapper.appendChild(slide);
+
+    //dupe
+    featuredWrapper.appendChild(slide.cloneNode(true));
+    console.log(featuredWrapper.children);
   }
 
   const featuredSwiper = new Swiper(".swiper.featured", {
