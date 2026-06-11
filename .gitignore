@@ -1,0 +1,15 @@
+# Ignores everything
+*
+
+# Except the following directories and their contents
+# !plugins/
+!plugins/my-plugin/
+!plugins/my-plugin/**
+
+!themes/
+!themes/hello-elementor-child/
+!themes/hello-elementor-child/**
+
+# And except these top-folder items
+!README.md
+!.gitignore 
