@@ -1,4 +1,12 @@
 <?php
+
+add_filter(
+  'wpforms_frontend_enqueue_css_layout_field_viewport_breakpoint',
+  function() {
+    return 768;
+  }
+);
+
 add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style(
       'swiper',
@@ -14,8 +22,9 @@ add_action( 'wp_enqueue_scripts', function() {
         'child-style',
         get_stylesheet_directory_uri() . '/style.css',
         array('parent-style'),
-        wp_get_theme()->get('Version')
+        filemtime(get_stylesheet_directory() . '/style.css')
     );
+
 
     wp_enqueue_script(
         'swiperjs',
@@ -24,15 +33,54 @@ add_action( 'wp_enqueue_scripts', function() {
         null,
         true
     );
-
+   
     wp_enqueue_script(
         'custom-js',
         get_stylesheet_directory_uri() . '/js/index.js',
-        array(),      // Dependencies
-        '1.0.0',      // Version
-        true          // Load in footer
+        array(),
+        filemtime(get_stylesheet_directory() . '/js/index.js'),
+        true
     );
-   
+
+    wp_enqueue_script(
+        'log-script',
+        get_stylesheet_directory_uri() . '/js/log.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/log.js'),
+        true
+    );
+
+    // Logs
+    
+    $locations = get_terms([
+        'taxonomy'   => 'es_location',
+        'hide_empty' => false,
+    ]);
+
+
+    $terms = get_terms([
+      'hide_empty' => false,
+    ]);
+
+    $address_components = es_get_address_components_container();
+
+    $cities = $address_components::get_locations(
+      array( 'locality' )
+    );
+
+    $taxonomies = get_taxonomies();
+
+    $url = get_page_link();
+
+    if (!is_wp_error($locations)) {
+        wp_localize_script('log-script', 'logData', [
+            'locations' => $locations,
+            'terms' => $terms,
+            'taxonomies' => $taxonomies,
+            'cities' => $cities,
+            'currentURL' => $url,
+        ]);
+    }
 
     //wp_script_add_data('custom-js','type','module');
 
@@ -130,5 +178,136 @@ function get_cities_slider(){
   return ob_get_clean();
 }
 
+function get_cities_pagination() {
+  ob_start();
+
+  $city_page_url = home_url( '/city/' );
+  $per_page      = 6;
+
+  $current_page = isset( $_GET['city_page'] )
+      ? max( 1, absint( wp_unslash( $_GET['city_page'] ) ) )
+      : 1;
+
+  $offset = ( $current_page - 1 ) * $per_page;
+
+  $query_args = array(
+      'taxonomy'   => 'es_location',
+      'hide_empty' => false,
+      'number'     => $per_page,
+      'offset'     => $offset,
+      'orderby'    => 'name',
+      'order'      => 'ASC',
+      'meta_query' => array(
+          array(
+              'key'     => 'type',
+              'value'   => 'locality',
+              'compare' => '=',
+          ),
+      ),
+  );
+
+  $city_terms = get_terms( $query_args );
+
+  if ( is_wp_error( $city_terms ) ) {
+      ?>
+      <p>
+          <?php esc_html_e( 'The cities could not be loaded.', 'your-theme' ); ?>
+      </p>
+      <?php
+  } elseif ( empty( $city_terms ) ) {
+      ?>
+      <p>
+          <?php esc_html_e( 'No cities were found.', 'your-theme' ); ?>
+      </p>
+      <?php
+  } else {
+      $cities = array_map(
+        function ( $city_term ) {
+            $attachments = get_posts(
+                array(
+                    'post_type'      => 'attachment',
+                    'post_status'    => 'inherit',
+                    'name'           => sanitize_title( $city_term->name ),
+                    'posts_per_page' => 1,
+                    'fields'         => 'ids',
+                )
+            );
+
+            $attachment_id = ! empty( $attachments )
+                ? $attachments[0]
+                : null;
+
+            return array(
+                'term'          => $city_term,
+                'attachment_id' => $attachment_id,
+                'source_url'    => $attachment_id
+                    ? wp_get_attachment_url( $attachment_id )
+                    : null,
+            );
+        },
+        $city_terms
+      );
+      ?>
+      <div class="cities-list">
+          <?php foreach ( $cities as $city ) : ?>
+              <?php
+                $city_url = add_query_arg(
+                    'city',
+                    $city['term']->slug,
+                    home_url( '/city/' )
+                );
+              ?>
+
+              <article class="city-card">
+                  <a href="<?php echo esc_url( $city_url ); ?>" class="city-card">
+                    <?php if ( $city['source_url'] ) : ?>
+                      <img
+                        src="<?php echo esc_url( $city['source_url'] ); ?>"
+                        alt="<?php echo esc_attr(
+                            sprintf(
+                                'Properties in %s',
+                                $city['term']->name
+                            )
+                        ); ?>"
+                          class="city-card__image"
+                      >
+                    <?php endif; ?>
+                    <span
+                        class="city-card__overlay"
+                        aria-hidden="true"
+                    ></span>
+                    <span class="city-card__content">
+                        <span class="city-card__title">
+                            <?php echo esc_html( $city['term']->name ); ?>
+                        </span>
+
+                        <span class="city-card__link">
+                            Explore Area
+                        </span>
+                    </span>
+                  </a>
+              </article>
+          <?php endforeach; ?>
+      </div>
+      <div class="pagination">
+        <button type="button"></button>
+        <button type="button"></button>
+      </div>
+      <?php
+  }
+
+  return ob_get_clean();
+}
+
 add_shortcode('featured_listings','get_featured_listings');
 add_shortcode('cities_slider','get_cities_slider');
+add_shortcode('cities_pagination','get_cities_pagination');
+
+function mytheme_widgets_init() {
+    register_sidebar(array(
+        'name' => 'Footer Widget Area',
+        'id'   => 'footer-widget-area',
+    ));
+}
+add_action('widgets_init', 'mytheme_widgets_init');
+
