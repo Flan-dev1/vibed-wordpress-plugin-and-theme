@@ -1,31 +1,31 @@
-const featuredProperties = await fetch("/wp-json/wp/v2/properties")
-  .then((r) => r.json())
-  .then(async (r) => {
-    // TODO: query featured category id dynamically
-    const featured = r.filter((property) =>
-      property.es_categories.includes(121),
-    );
+export async function initFeaturedSlider() {
+  const featuredProperties = await fetch("/wp-json/wp/v2/properties?_embed")
+    .then((r) => r.json())
+    .then(async (r) => {
+      // TODO: query featured category id dynamically
+      const featured = r.filter((property) =>
+        property.es_categories.includes(121),
+      );
 
-    return Promise.all(
-      featured.map(async (property, i) => {
-        const mediaResponse = await fetch(
-          `/wp-json/wp/v2/media/${property.featured_media}`,
-        );
-        const media = await mediaResponse.json();
+      return Promise.all(
+        featured.map(async (property, i) => {
+          // const mediaResponse = await fetch(
+          //   `/wp-json/wp/v2/media/${property.featured_media}`,
+          // );
+          const media = property._embedded["wp:featuredmedia"][0].source_url;
 
-        return {
-          index: i,
-          id: property.id,
-          name: property.title.rendered,
-          media: property.featured_media,
-          imageLink: media.link,
-          price: property.price,
-        };
-      }),
-    );
-  });
+          return {
+            index: i,
+            id: property.id,
+            name: property.title.rendered,
+            media: property.featured_media,
+            imageLink: media,
+            price: property.price,
+          };
+        }),
+      );
+    });
 
-export function initFeaturedSlider() {
   const featuredWrapper = document.getElementById("featured-wrapper");
 
   for (const property of featuredProperties) {
@@ -67,7 +67,11 @@ export function initFeaturedSlider() {
     // Optional parameters
     direction: "horizontal",
     loop: true,
-
+    autoplay: {
+      delay: 5000,
+      pauseOnMouseEnter: true,
+    },
+    speed: 550,
     // Navigation arrows
     navigation: {
       nextEl: ".swiper-button-next.featured",

@@ -1,37 +1,45 @@
-//TODO: make cities dynamic
-const cities = ["Makati", "Manila", "BGC"];
+export async function initCitiesSlider() {
+  //TODO: make cities dynamic
+  const cities = ["Makati", "Manila", "BGC"];
 
-const cityImages = [];
+  const cityImages = await Promise.all(
+    cities.map(async (city) => {
+      const media = await fetch(`/wp-json/wp/v2/media?slug=${city}`).then((r) =>
+        r.json(),
+      );
 
-for (const c of cities) {
-  const media = await fetch(`/wp-json/wp/v2/media?slug=${c}`).then((r) =>
-    r.json(),
+      return {
+        name: city,
+        source_url: media[0]?.source_url ?? null,
+      };
+    }),
   );
 
-  cityImages.push({
-    name: c,
-    source_url: media[0]?.source_url ?? null,
-  });
-}
-
-export function initCitiesSlider() {
   const citiesWrapper = document.getElementById("cities-wrapper");
 
   for (const city of cityImages) {
     const slide = document.createElement("div");
     slide.className = "swiper-slide city";
 
+    const slideWrapper = document.createElement("div");
+    slideWrapper.className = "slide-wrapper";
+
     const imageElement = document.createElement("img");
     imageElement.src = city.source_url;
     imageElement.className = "city-image";
     imageElement.id = `slide-${city.name}`;
 
+    const overlayElement = document.createElement("div");
+    overlayElement.className = "slide-overlay";
+
     const detailsElement = document.createElement("div");
     detailsElement.className = "city-details";
     detailsElement.innerText = `${city.name}`;
 
-    slide.appendChild(imageElement);
-    slide.appendChild(detailsElement);
+    slideWrapper.appendChild(overlayElement);
+    slideWrapper.appendChild(imageElement);
+    slideWrapper.appendChild(detailsElement);
+    slide.appendChild(slideWrapper);
 
     citiesWrapper.appendChild(slide);
   }
@@ -41,17 +49,25 @@ export function initCitiesSlider() {
     const slide = document.createElement("div");
     slide.className = "swiper-slide city";
 
+    const slideWrapper = document.createElement("div");
+    slideWrapper.className = "slide-wrapper cities";
+
     const imageElement = document.createElement("img");
     imageElement.src = city.source_url;
     imageElement.className = "city-image";
     imageElement.id = `slide-${city.name}`;
 
+    const overlayElement = document.createElement("div");
+    overlayElement.className = "slide-overlay";
+
     const detailsElement = document.createElement("div");
     detailsElement.className = "city-details";
     detailsElement.innerText = `${city.name}`;
 
-    slide.appendChild(imageElement);
-    slide.appendChild(detailsElement);
+    slideWrapper.appendChild(overlayElement);
+    slideWrapper.appendChild(imageElement);
+    slideWrapper.appendChild(detailsElement);
+    slide.appendChild(slideWrapper);
 
     citiesWrapper.appendChild(slide);
   }
@@ -66,9 +82,25 @@ export function initCitiesSlider() {
     direction: "horizontal",
     loop: true,
     centeredSlides: false,
-    slidesPerView: 3,
-    spaceBetween: 30,
-
+    spaceBetween: 15,
+    slidesPerView: 1,
+    autoplay: {
+      delay: 5000,
+      pauseOnMouseEnter: true,
+    },
+    speed: 450,
+    breakpoints: {
+      1024: {
+        spaceBetween: 30,
+        slidesPerView: 3,
+      },
+      768: {
+        slidesPerView: 3,
+      },
+      640: {
+        slidesPerView: 2,
+      },
+    },
     // Navigation arrows
     navigation: {
       nextEl: ".swiper-button-next.cities",
