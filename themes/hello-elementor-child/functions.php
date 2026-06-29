@@ -179,124 +179,250 @@ function get_cities_slider(){
 }
 
 function get_cities_pagination() {
-  ob_start();
+    ob_start();
 
-  $city_page_url = home_url( '/city/' );
-  $per_page      = 6;
+    $city_page_url = home_url( '/city/' );
+    $per_page      = 6;
 
-  $current_page = isset( $_GET['city_page'] )
-      ? max( 1, absint( wp_unslash( $_GET['city_page'] ) ) )
-      : 1;
+    $requested_page = isset( $_GET['city_page'] )
+        ? max( 1, absint( wp_unslash( $_GET['city_page'] ) ) )
+        : 1;
 
-  $offset = ( $current_page - 1 ) * $per_page;
+    $city_meta_query = array(
+        array(
+            'key'     => 'type',
+            'value'   => 'locality',
+            'compare' => '=',
+        ),
+    );
 
-  $query_args = array(
-      'taxonomy'   => 'es_location',
-      'hide_empty' => false,
-      'number'     => $per_page,
-      'offset'     => $offset,
-      'orderby'    => 'name',
-      'order'      => 'ASC',
-      'meta_query' => array(
-          array(
-              'key'     => 'type',
-              'value'   => 'locality',
-              'compare' => '=',
-          ),
-      ),
-  );
+    $total_cities = get_terms(
+        array(
+            'taxonomy'   => 'es_location',
+            'hide_empty' => false,
+            'fields'     => 'count',
+            'meta_query' => $city_meta_query,
+        )
+    );
 
-  $city_terms = get_terms( $query_args );
+    if ( is_wp_error( $total_cities ) ) {
+        ?>
+        <p>
+            <?php esc_html_e( 'The cities could not be loaded.', 'your-theme' ); ?>
+        </p>
+        <?php
 
-  if ( is_wp_error( $city_terms ) ) {
-      ?>
-      <p>
-          <?php esc_html_e( 'The cities could not be loaded.', 'your-theme' ); ?>
-      </p>
-      <?php
-  } elseif ( empty( $city_terms ) ) {
-      ?>
-      <p>
-          <?php esc_html_e( 'No cities were found.', 'your-theme' ); ?>
-      </p>
-      <?php
-  } else {
-      $cities = array_map(
-        function ( $city_term ) {
-            $attachments = get_posts(
-                array(
-                    'post_type'      => 'attachment',
-                    'post_status'    => 'inherit',
-                    'name'           => sanitize_title( $city_term->name ),
-                    'posts_per_page' => 1,
-                    'fields'         => 'ids',
-                )
-            );
+        return ob_get_clean();
+    }
 
-            $attachment_id = ! empty( $attachments )
-                ? $attachments[0]
-                : null;
+    $total_cities = (int) $total_cities;
+    $total_pages  = (int) ceil( $total_cities / $per_page );
 
-            return array(
-                'term'          => $city_term,
-                'attachment_id' => $attachment_id,
-                'source_url'    => $attachment_id
-                    ? wp_get_attachment_url( $attachment_id )
-                    : null,
-            );
-        },
-        $city_terms
-      );
-      ?>
-      <div class="cities-list">
-          <?php foreach ( $cities as $city ) : ?>
-              <?php
+    $current_page = $total_pages > 0
+        ? min( $requested_page, $total_pages )
+        : 1;
+
+    $offset = ( $current_page - 1 ) * $per_page;
+
+    $query_args = array(
+        'taxonomy'   => 'es_location',
+        'hide_empty' => false,
+        'number'     => $per_page,
+        'offset'     => $offset,
+        'orderby'    => 'name',
+        'order'      => 'ASC',
+        'meta_query' => $city_meta_query,
+    );
+
+    $city_terms = get_terms( $query_args );
+
+    if ( is_wp_error( $city_terms ) ) {
+        ?>
+        <p>
+            <?php esc_html_e( 'The cities could not be loaded.', 'your-theme' ); ?>
+        </p>
+        <?php
+    } elseif ( empty( $city_terms ) ) {
+        ?>
+        <p>
+            <?php esc_html_e( 'No cities were found.', 'your-theme' ); ?>
+        </p>
+        <?php
+    } else {
+        $cities = array_map(
+            function ( $city_term ) {
+                $attachments = get_posts(
+                    array(
+                        'post_type'      => 'attachment',
+                        'post_status'    => 'inherit',
+                        'name'           => sanitize_title( $city_term->name ),
+                        'posts_per_page' => 1,
+                        'fields'         => 'ids',
+                    )
+                );
+
+                $attachment_id = ! empty( $attachments )
+                    ? $attachments[0]
+                    : null;
+
+                return array(
+                    'term'          => $city_term,
+                    'attachment_id' => $attachment_id,
+                    'source_url'    => $attachment_id
+                        ? wp_get_attachment_url( $attachment_id )
+                        : null,
+                );
+            },
+            $city_terms
+        );
+        ?>
+
+        <div class="cities-list">
+            <?php foreach ( $cities as $city ) : ?>
+                <?php
                 $city_url = add_query_arg(
                     'city',
                     $city['term']->slug,
-                    home_url( '/city/' )
+                    $city_page_url
                 );
-              ?>
+                ?>
 
-              <article class="city-card">
-                  <a href="<?php echo esc_url( $city_url ); ?>" class="city-card">
-                    <?php if ( $city['source_url'] ) : ?>
-                      <img
-                        src="<?php echo esc_url( $city['source_url'] ); ?>"
-                        alt="<?php echo esc_attr(
-                            sprintf(
-                                'Properties in %s',
-                                $city['term']->name
-                            )
-                        ); ?>"
-                          class="city-card__image"
-                      >
+                <article class="city-card">
+                    <a
+                        href="<?php echo esc_url( $city_url ); ?>"
+                        class="city-card"
+                    >
+                        <?php if ( $city['source_url'] ) : ?>
+                            <img
+                                src="<?php echo esc_url( $city['source_url'] ); ?>"
+                                alt="<?php
+                                echo esc_attr(
+                                    sprintf(
+                                        'Properties in %s',
+                                        $city['term']->name
+                                    )
+                                );
+                                ?>"
+                                class="city-card__image"
+                            >
+                        <?php endif; ?>
+
+                        <span
+                            class="city-card__overlay"
+                            aria-hidden="true"
+                        ></span>
+
+                        <span class="city-card__content">
+                            <span class="city-card__title">
+                                <?php echo esc_html( $city['term']->name ); ?>
+                            </span>
+
+                            <span class="city-card__link">
+                                <?php esc_html_e( 'Explore Area', 'your-theme' ); ?>
+                            </span>
+                        </span>
+                    </a>
+                </article>
+            <?php endforeach; ?>
+        </div>
+
+        <?php
+        if ( $total_pages > 1 ) {
+            $pagination_placeholder = 999999999;
+
+            $pagination_base = str_replace(
+                (string) $pagination_placeholder,
+                '%#%',
+                add_query_arg(
+                    'city_page',
+                    $pagination_placeholder,
+                    $city_page_url
+                )
+            );
+
+            $page_number_links = paginate_links(
+                array(
+                    'base'      => $pagination_base,
+                    'format'    => '',
+                    'current'   => $current_page,
+                    'total'     => $total_pages,
+                    'type'      => 'array',
+                    'prev_next' => false,
+                    'end_size'  => 1,
+                    'mid_size'  => 4,
+                )
+            );
+
+            $previous_page_url = add_query_arg(
+                'city_page',
+                $current_page - 1,
+                $city_page_url
+            );
+
+            $next_page_url = add_query_arg(
+                'city_page',
+                $current_page + 1,
+                $city_page_url
+            );
+            ?>
+
+            <nav
+                class="city-pagination"
+                aria-label="<?php
+                esc_attr_e( 'Cities pagination', 'your-theme' );
+                ?>"
+            >
+                <div class="city-pagination__links">
+
+                    <?php if ( $current_page > 1 ) : ?>
+                        <a
+                            class="prev page-numbers"
+                            href="<?php echo esc_url( $previous_page_url ); ?>"
+                            aria-label="<?php
+                            esc_attr_e( 'Previous page', 'your-theme' );
+                            ?>"
+                        >
+                            <span aria-hidden="true">&lsaquo;</span>
+                        </a>
+                    <?php else : ?>
+                        <span
+                            class="prev page-numbers is-disabled"
+                            aria-disabled="true"
+                        >
+                            <span aria-hidden="true">&lsaquo;</span>
+                        </span>
                     <?php endif; ?>
-                    <span
-                        class="city-card__overlay"
-                        aria-hidden="true"
-                    ></span>
-                    <span class="city-card__content">
-                        <span class="city-card__title">
-                            <?php echo esc_html( $city['term']->name ); ?>
-                        </span>
 
-                        <span class="city-card__link">
-                            Explore Area
-                        </span>
-                    </span>
-                  </a>
-              </article>
-          <?php endforeach; ?>
-      </div>
-      <div class="pagination">
-        <button type="button"></button>
-        <button type="button"></button>
-      </div>
-      <?php
-  }
+                    <?php foreach ( (array) $page_number_links as $page_link ) : ?>
+                        <?php echo wp_kses_post( $page_link ); ?>
+                    <?php endforeach; ?>
 
-  return ob_get_clean();
+                    <?php if ( $current_page < $total_pages ) : ?>
+                        <a
+                            class="next page-numbers"
+                            href="<?php echo esc_url( $next_page_url ); ?>"
+                            aria-label="<?php
+                            esc_attr_e( 'Next page', 'your-theme' );
+                            ?>"
+                        >
+                            <span aria-hidden="true">&rsaquo;</span>
+                        </a>
+                    <?php else : ?>
+                        <span
+                            class="next page-numbers is-disabled"
+                            aria-disabled="true"
+                        >
+                            <span aria-hidden="true">&rsaquo;</span>
+                        </span>
+                    <?php endif; ?>
+
+                </div>
+            </nav>
+            <?php
+        }
+    }
+
+    return ob_get_clean();
 }
 
 add_shortcode('featured_listings','get_featured_listings');

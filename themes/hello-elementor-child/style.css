@@ -717,3 +717,197 @@ hr {
     transition: none;
   }
 }
+
+/* Pagination container */
+.city-pagination {
+  --pagination-text: #a3a9b5;
+  --pagination-active: #ffffff;
+  --pagination-line: rgba(255, 255, 255, 0.8);
+  --pagination-arrow: #5c6576;
+
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.5rem 1rem;
+}
+
+/* Numbers, arrows, and bottom line */
+.city-pagination__links {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+
+  width: max-content;
+  min-width: 248px;
+  padding: 0 0 0.75rem;
+}
+
+/* Horizontal line */
+.city-pagination__links::after {
+  content: "";
+
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  height: 1px;
+
+  background-color: var(--pagination-line);
+}
+
+/* Base style for page numbers */
+.city-pagination .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0.75rem;
+  height: 2rem;
+  padding: 0;
+
+  border: 0;
+
+  color: var(--pagination-text);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+/* Current page */
+.city-pagination .page-numbers.current {
+  color: var(--pagination-active);
+}
+
+/* Other page-number links */
+.city-pagination a.page-numbers:not(.prev):not(.next):hover {
+  color: var(--pagination-active);
+  transform: translateY(-1px);
+}
+
+/* Ellipsis */
+.city-pagination .page-numbers.dots {
+  min-width: 1.5rem;
+
+  color: var(--pagination-text);
+  letter-spacing: 0.08rem;
+
+  cursor: default;
+}
+
+/* Previous and next circular buttons */
+.city-pagination .page-numbers.prev,
+.city-pagination .page-numbers.next {
+  position: relative;
+  flex: 0 0 2rem;
+
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+
+  border-radius: 50%;
+
+  background-color: #ffffff;
+  color: transparent;
+
+  overflow: hidden;
+}
+
+/* Slightly separate arrows from numbers */
+.city-pagination .page-numbers.prev {
+  margin-right: 0.1rem;
+}
+
+.city-pagination .page-numbers.next {
+  margin-left: 0.1rem;
+}
+
+/* Hide the ‹ and › text while keeping it accessible */
+.city-pagination .page-numbers.prev > span,
+.city-pagination .page-numbers.next > span {
+  opacity: 0;
+}
+
+/* Custom chevron */
+.city-pagination .page-numbers.prev::before,
+.city-pagination .page-numbers.next::before {
+  content: "";
+
+  position: absolute;
+  top: 50%;
+
+  width: 0.4rem;
+  height: 0.4rem;
+
+  border-top: 1.5px solid var(--pagination-arrow);
+  border-right: 1.5px solid var(--pagination-arrow);
+}
+
+/* Left chevron */
+.city-pagination .page-numbers.prev::before {
+  left: 53%;
+  transform: translate(-50%, -50%) rotate(-135deg);
+}
+
+/* Right chevron */
+.city-pagination .page-numbers.next::before {
+  left: 47%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Arrow hover */
+.city-pagination a.page-numbers.prev:hover,
+.city-pagination a.page-numbers.next:hover {
+  transform: scale(1.06);
+}
+
+/* Keyboard focus */
+.city-pagination a.page-numbers:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* Disabled arrow */
+.city-pagination .page-numbers.is-disabled {
+  cursor: default;
+}
+
+.city-pagination .page-numbers.is-disabled::before {
+  opacity: 0.4;
+}
+
+/* Mobile adjustment */
+@media (max-width: 480px) {
+  .city-pagination {
+    padding-inline: 0.75rem;
+  }
+
+  .city-pagination__links {
+    gap: 0.5rem;
+    min-width: 220px;
+  }
+
+  .city-pagination .page-numbers {
+    font-size: 1rem;
+  }
+
+  .city-pagination .page-numbers.prev,
+  .city-pagination .page-numbers.next {
+    flex-basis: 1.875rem;
+
+    width: 1.875rem;
+    height: 1.875rem;
+    min-width: 1.875rem;
+  }
+}
