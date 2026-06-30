@@ -719,7 +719,7 @@ hr {
 }
 
 /* Pagination container */
-.city-pagination {
+.custom-pagination {
   --pagination-text: #a3a9b5;
   --pagination-active: #ffffff;
   --pagination-line: rgba(255, 255, 255, 0.8);
@@ -734,7 +734,7 @@ hr {
 }
 
 /* Numbers, arrows, and bottom line */
-.city-pagination__links {
+.custom-pagination__links {
   position: relative;
 
   display: flex;
@@ -748,7 +748,7 @@ hr {
 }
 
 /* Horizontal line */
-.city-pagination__links::after {
+.custom-pagination__links::after {
   content: "";
 
   position: absolute;
@@ -762,7 +762,7 @@ hr {
 }
 
 /* Base style for page numbers */
-.city-pagination .page-numbers {
+.custom-pagination .page-numbers {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -786,18 +786,18 @@ hr {
 }
 
 /* Current page */
-.city-pagination .page-numbers.current {
+.custom-pagination .page-numbers.current {
   color: var(--pagination-active);
 }
 
 /* Other page-number links */
-.city-pagination a.page-numbers:not(.prev):not(.next):hover {
+.custom-pagination a.page-numbers:not(.prev):not(.next):hover {
   color: var(--pagination-active);
   transform: translateY(-1px);
 }
 
 /* Ellipsis */
-.city-pagination .page-numbers.dots {
+.custom-pagination .page-numbers.dots {
   min-width: 1.5rem;
 
   color: var(--pagination-text);
@@ -807,8 +807,8 @@ hr {
 }
 
 /* Previous and next circular buttons */
-.city-pagination .page-numbers.prev,
-.city-pagination .page-numbers.next {
+.custom-pagination .page-numbers.prev,
+.custom-pagination .page-numbers.next {
   position: relative;
   flex: 0 0 2rem;
 
@@ -825,23 +825,23 @@ hr {
 }
 
 /* Slightly separate arrows from numbers */
-.city-pagination .page-numbers.prev {
+.custom-pagination .page-numbers.prev {
   margin-right: 0.1rem;
 }
 
-.city-pagination .page-numbers.next {
+.custom-pagination .page-numbers.next {
   margin-left: 0.1rem;
 }
 
 /* Hide the ‹ and › text while keeping it accessible */
-.city-pagination .page-numbers.prev > span,
-.city-pagination .page-numbers.next > span {
+.custom-pagination .page-numbers.prev > span,
+.custom-pagination .page-numbers.next > span {
   opacity: 0;
 }
 
 /* Custom chevron */
-.city-pagination .page-numbers.prev::before,
-.city-pagination .page-numbers.next::before {
+.custom-pagination .page-numbers.prev::before,
+.custom-pagination .page-numbers.next::before {
   content: "";
 
   position: absolute;
@@ -855,59 +855,170 @@ hr {
 }
 
 /* Left chevron */
-.city-pagination .page-numbers.prev::before {
+.custom-pagination .page-numbers.prev::before {
   left: 53%;
   transform: translate(-50%, -50%) rotate(-135deg);
 }
 
 /* Right chevron */
-.city-pagination .page-numbers.next::before {
+.custom-pagination .page-numbers.next::before {
   left: 47%;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
 /* Arrow hover */
-.city-pagination a.page-numbers.prev:hover,
-.city-pagination a.page-numbers.next:hover {
+.custom-pagination a.page-numbers.prev:hover,
+.custom-pagination a.page-numbers.next:hover {
   transform: scale(1.06);
 }
 
 /* Keyboard focus */
-.city-pagination a.page-numbers:focus-visible {
+.custom-pagination a.page-numbers:focus-visible {
   outline: 2px solid #ffffff;
   outline-offset: 3px;
 }
 
 /* Disabled arrow */
-.city-pagination .page-numbers.is-disabled {
+.custom-pagination .page-numbers.is-disabled {
   cursor: default;
 }
 
-.city-pagination .page-numbers.is-disabled::before {
+.custom-pagination .page-numbers.is-disabled::before {
   opacity: 0.4;
 }
 
 /* Mobile adjustment */
 @media (max-width: 480px) {
-  .city-pagination {
+  .custom-pagination {
     padding-inline: 0.75rem;
   }
 
-  .city-pagination__links {
+  .custom-pagination__links {
     gap: 0.5rem;
     min-width: 220px;
   }
 
-  .city-pagination .page-numbers {
+  .custom-pagination .page-numbers {
     font-size: 1rem;
   }
 
-  .city-pagination .page-numbers.prev,
-  .city-pagination .page-numbers.next {
+  .custom-pagination .page-numbers.prev,
+  .custom-pagination .page-numbers.next {
     flex-basis: 1.875rem;
 
     width: 1.875rem;
     height: 1.875rem;
     min-width: 1.875rem;
   }
+}
+
+.test-log {
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+
+/* TESTIMONIALS */
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 48px;
+    width: 100%;
+    padding: 0 39px;
+}
+
+.testimonial-card {
+    display: flex;
+    min-height: 176px;
+    padding: 46px 27px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(255 255 255 / 25%);
+    border-radius: 8px;
+    color: #f7f8fc;
+    text-align: center;
+    transition:
+        border-color 180ms ease,
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.testimonial-card:hover {
+    border-color: rgb(255 255 255 / 65%);
+    box-shadow: 0 8px 22px rgb(0 0 0 / 12%);
+    transform: translateY(-2px);
+}
+
+/* Rating container */
+.star-rating {
+    --rating: 0;
+    --maximum-rating: 5;
+    --star-size: 22px;
+    --star-gap: 4px;
+    --empty-color: rgb(255 255 255 / 25%);
+    --filled-color: #ffffff;
+
+    position: relative;
+    display: inline-block;
+    margin-bottom: 34px;
+    font-size: var(--star-size);
+    line-height: 1;
+    letter-spacing: var(--star-gap);
+}
+
+/* Empty five-star layer */
+.star-rating__empty {
+    display: block;
+    color: var(--empty-color);
+}
+
+/* Filled layer placed above the empty stars */
+.star-rating__filled {
+    position: absolute;
+    inset: 0 auto 0 0;
+    display: block;
+    width: calc(
+        min(var(--rating), var(--maximum-rating)) /
+        var(--maximum-rating) *
+        100%
+    );
+    overflow: hidden;
+    color: var(--filled-color);
+    white-space: nowrap;
+}
+
+.testimonial-card__text {
+    max-width: 345px;
+    margin: 0;
+    color: rgb(255 255 255 / 82%);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.testimonial-card__name {
+    margin: 19px 0 0;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+@media (max-width: 700px) {
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .testimonial-card {
+        min-height: 160px;
+        padding: 22px 16px;
+    }
+
+    .testimonial-card__text {
+        font-size: 11px;
+    }
 }
