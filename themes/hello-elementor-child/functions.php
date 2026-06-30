@@ -177,9 +177,99 @@ function get_cities_slider()
     </div>
     <button class="cta cities">Explore More</button>
   </div>
-  <?php
+<?php
 
   return ob_get_clean();
+}
+
+function getPaginationUI(
+  $current_page,
+  $next_page_url,
+  $previous_page_url,
+  $page_number_links,
+  $total_pages,
+  $current_sort = 'default'
+) {
+  $allowed_sorts = array(
+    'default',
+    'rating-desc',
+    'rating-asc',
+    'name-asc',
+    'name-desc',
+  );
+
+  // prevent an arbitrary query value from entering the URLs.
+  if (! in_array($current_sort, $allowed_sorts, true)) {
+    $current_sort = 'default';
+  }
+
+  // preserve the sort argument in previous and next links.
+  $previous_page_url = add_query_arg(
+    'sort',
+    $current_sort,
+    $previous_page_url
+  );
+
+  $next_page_url = add_query_arg(
+    'sort',
+    $current_sort,
+    $next_page_url
+  );
+?>
+  <nav
+    class="custom-pagination"
+    aria-label="<?php
+                esc_attr_e('Cities pagination', 'your-theme');
+                ?>">
+    <div class="custom-pagination__links">
+
+      <?php if ($current_page > 1) : ?>
+        <a
+          class="prev page-numbers"
+          href="<?php echo esc_url($previous_page_url); ?>"
+          aria-label="<?php
+                      esc_attr_e('Previous page', 'your-theme');
+                      ?>">
+          <span aria-hidden="true">&lsaquo;</span>
+        </a>
+      <?php else : ?>
+        <span
+          class="prev page-numbers is-disabled"
+          aria-disabled="true">
+          <span aria-hidden="true">&lsaquo;</span>
+        </span>
+      <?php endif; ?>
+
+      <?php foreach ((array) $page_number_links as $page_link) : ?>
+        <?php
+        /*
+                 * These links must already contain the sort argument.
+                 * Add it when generating $page_number_links.
+                 */
+        echo wp_kses_post($page_link);
+        ?>
+      <?php endforeach; ?>
+
+      <?php if ($current_page < $total_pages) : ?>
+        <a
+          class="next page-numbers"
+          href="<?php echo esc_url($next_page_url); ?>"
+          aria-label="<?php
+                      esc_attr_e('Next page', 'your-theme');
+                      ?>">
+          <span aria-hidden="true">&rsaquo;</span>
+        </a>
+      <?php else : ?>
+        <span
+          class="next page-numbers is-disabled"
+          aria-disabled="true">
+          <span aria-hidden="true">&rsaquo;</span>
+        </span>
+      <?php endif; ?>
+
+    </div>
+  </nav>
+  <?php
 }
 
 function get_cities_pagination()
@@ -395,7 +485,79 @@ function get_cities_pagination()
 function get_testimonials()
 {
   ob_start();
+
+  $allowed_sorts = array(
+    'default',
+    'rating-desc',
+    'rating-asc',
+    'name-asc',
+    'name-desc',
+  );
+
+  $current_sort = isset($_GET['sort'])
+    ? sanitize_key(wp_unslash($_GET['sort']))
+    : 'default';
+
+  if (! in_array($current_sort, $allowed_sorts, true)) {
+    $current_sort = 'default';
+  }
+
   ?>
+
+  <div class="testimonials-toolbar">
+    <div class="sort-control">
+      <span class="screen-reader-text">Sort testimonials</span>
+
+      <form
+        class="testimonials-sort"
+        method="get"
+        action="<?php echo esc_url(get_permalink()); ?>">
+        <label for="testimonial-sort" class="screen-reader-text">
+          <?php esc_html_e('Sort testimonials', 'your-theme'); ?>
+        </label>
+
+        <select
+          id="testimonial-sort"
+          name="sort"
+          onchange="this.form.submit()">
+          <option value="default" <?php selected($current_sort, 'default'); ?>>
+            <?php esc_html_e('Sort', 'your-theme'); ?>
+          </option>
+
+          <option
+            value="rating-desc"
+            <?php selected($current_sort, 'rating-desc'); ?>>
+            <?php esc_html_e('Highest rating', 'your-theme'); ?>
+          </option>
+
+          <option
+            value="rating-asc"
+            <?php selected($current_sort, 'rating-asc'); ?>>
+            <?php esc_html_e('Lowest rating', 'your-theme'); ?>
+          </option>
+
+          <option
+            value="name-asc"
+            <?php selected($current_sort, 'name-asc'); ?>>
+            <?php esc_html_e('Name: A–Z', 'your-theme'); ?>
+          </option>
+
+          <option
+            value="name-desc"
+            <?php selected($current_sort, 'name-desc'); ?>>
+            <?php esc_html_e('Name: Z–A', 'your-theme'); ?>
+          </option>
+        </select>
+
+        <noscript>
+          <button type="submit">
+            <?php esc_html_e('Apply', 'your-theme'); ?>
+          </button>
+        </noscript>
+      </form>
+    </div>
+  </div>
+
   <div class="testimonials-grid">
     <?php
     $per_page = 6;
@@ -436,16 +598,48 @@ function get_testimonials()
 
     $offset = ($current_page - 1) * $per_page;
 
-    $testimonials = get_posts(
-      array(
-        'post_type'      => 'sf_testimonial',
-        'post_status'    => 'publish',
-        'posts_per_page' => $per_page,
-        'offset'         => $offset,
-        'orderby'        => 'date',
-        'order'          => 'ASC',
-      )
+    $query_args = array(
+      'post_type'      => 'sf_testimonial',
+      'post_status'    => 'publish',
+      'posts_per_page' => $per_page,
+      'offset'         => $offset,
+      'orderby'        => 'date',
+      'order'          => 'ASC',
     );
+
+    switch ($current_sort) {
+      case 'rating-desc':
+        $query_args['meta_key'] = '_sf_rating';
+        $query_args['orderby']  = 'meta_value_num';
+        $query_args['order']    = 'DESC';
+        break;
+
+      case 'rating-asc':
+        $query_args['meta_key'] = '_sf_rating';
+        $query_args['orderby']  = 'meta_value_num';
+        $query_args['order']    = 'ASC';
+        break;
+
+      case 'name-asc':
+        $query_args['meta_key'] = '_sf_name';
+        $query_args['orderby'] = 'meta_value';
+        $query_args['order']   = 'ASC';
+        break;
+
+      case 'name-desc':
+        $query_args['meta_key'] = '_sf_name';
+        $query_args['orderby'] = 'meta_value';
+        $query_args['order']   = 'DESC';
+        break;
+
+      case 'default':
+      default:
+        $query_args['orderby'] = 'date';
+        $query_args['order']   = 'DESC';
+        break;
+    }
+
+    $testimonials = get_posts($query_args);
 
     foreach ($testimonials as $testimonial) :
       $id     = $testimonial->ID;
@@ -478,18 +672,23 @@ function get_testimonials()
       </article>
     <?php endforeach; ?>
   </div>
-  <?php
+<?php
+  // pagination
   if ($total_pages > 1) {
-    $pagination_placeholder = 999999999;
+    $big = 999999999;
+
+    $pagination_base = add_query_arg(
+      array(
+        'testimonials_page' => $big,
+        'sort'             => $current_sort,
+      ),
+      get_permalink()
+    );
 
     $pagination_base = str_replace(
-      (string) $pagination_placeholder,
+      (string) $big,
       '%#%',
-      add_query_arg(
-        'testimonials_page',
-        $pagination_placeholder,
-        $testimonials_page_url
-      )
+      $pagination_base
     );
 
     $current_page = $total_pages > 0
@@ -498,16 +697,18 @@ function get_testimonials()
 
     $page_number_links = paginate_links(
       array(
-        'base' => $pagination_base,
-        'format' => '',
-        'current' => $current_page,
-        'total' => $total_pages,
-        'type' => 'array',
+        'base'      => $pagination_base,
+        'format'    => '',
+        'current'   => $current_page,
+        'total'     => $total_pages,
+        'type'      => 'array',
         'prev_next' => false,
-        'end_size' => 1,
-        'mid_size' => 4,
+        'mid_size'  => 1,
+        'end_size'  => 1,
       )
     );
+
+    $page_number_links = $page_number_links ?: array();
 
     $previous_page_url = add_query_arg(
       'testimonials_page',
@@ -521,58 +722,7 @@ function get_testimonials()
       $testimonials_page_url
     );
 
-  ?>
-
-    <nav
-      class="custom-pagination"
-      aria-label="<?php
-                  esc_attr_e('Cities pagination', 'your-theme');
-                  ?>">
-      <div class="custom-pagination__links">
-
-        <?php if ($current_page > 1) : ?>
-          <a
-            class="prev page-numbers"
-            href="<?php echo esc_url($previous_page_url); ?>"
-            aria-label="<?php
-                        esc_attr_e('Previous page', 'your-theme');
-                        ?>">
-            <span aria-hidden="true">&lsaquo;</span>
-          </a>
-        <?php else : ?>
-          <span
-            class="prev page-numbers is-disabled"
-            aria-disabled="true">
-            <span aria-hidden="true">&lsaquo;</span>
-          </span>
-        <?php endif; ?>
-
-        <?php foreach ((array) $page_number_links as $page_link) : ?>
-          <?php echo wp_kses_post($page_link); ?>
-        <?php endforeach; ?>
-
-        <?php if ($current_page < $total_pages) : ?>
-          <a
-            class="next page-numbers"
-            href="<?php echo esc_url($next_page_url); ?>"
-            aria-label="<?php
-                        esc_attr_e('Next page', 'your-theme');
-                        ?>">
-            <span aria-hidden="true">&rsaquo;</span>
-          </a>
-        <?php else : ?>
-          <span
-            class="next page-numbers is-disabled"
-            aria-disabled="true">
-            <span aria-hidden="true">&rsaquo;</span>
-          </span>
-        <?php endif; ?>
-
-      </div>
-    </nav>
-
-<?php
-
+    getPaginationUI($current_page, $next_page_url, $previous_page_url, $page_number_links, $total_pages, $current_sort);
   }
 
   return ob_get_clean();
