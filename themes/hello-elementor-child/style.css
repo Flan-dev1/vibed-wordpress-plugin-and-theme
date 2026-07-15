@@ -147,7 +147,7 @@ button:focus {
   font-weight: 600;
   color: #ffffff;
 
-  &.properties {
+  &.cta-properties {
     bottom: 30px;
     top: auto;
     left: 27px;

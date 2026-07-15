@@ -152,7 +152,7 @@ function get_featured_listings()
         <path d="M5.98999 7.52756C5.49293 7.52756 5.08999 7.12462 5.08999 6.62756C5.08999 6.13051 5.49293 5.72756 5.98999 5.72756V6.62756V7.52756ZM7.26389 5.99117C7.61536 6.34264 7.61536 6.91249 7.26389 7.26396L1.53632 12.9915C1.18485 13.343 0.615001 13.343 0.263529 12.9915C-0.0879426 12.6401 -0.0879426 12.0702 0.263529 11.7187L5.3547 6.62756L0.263529 1.53639C-0.0879426 1.18492 -0.0879426 0.615075 0.263529 0.263603C0.615001 -0.0878692 1.18485 -0.0878692 1.53632 0.263603L7.26389 5.99117ZM5.98999 6.62756V5.72756H6.62749V6.62756V7.52756H5.98999V6.62756Z" fill="#454545" />
       </svg>
     </div>
-    <button class="cta properties">View All Properties</button>
+    <a href="/properties"><button class="cta cta-properties">View All Properties</button></a>
   </div>
 <?php
 
@@ -346,9 +346,9 @@ function get_cities_pagination()
         $name = get_the_title($city_id);
         $image_id = (int) get_post_meta($city_id, '_sf_image_id', true);
         $city_url = add_query_arg(
-          'city',
-          $name,
-          $city_page_url
+          'city-id',
+          $city_id,
+          home_url('/properties/')
         );
         $image = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
         ?>
