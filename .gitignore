@@ -2,9 +2,9 @@
 *
 
 # Except the following directories and their contents
-# !plugins/
-!plugins/my-plugin/
-!plugins/my-plugin/**
+!plugins/
+!plugins/starflan-real-estate
+!plugins/starflan-real-estate/**
 
 !themes/
 !themes/hello-elementor-child/
