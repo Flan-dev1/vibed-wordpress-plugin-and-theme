@@ -7,9 +7,9 @@ if (! defined('ABSPATH')) {
 function properties_shortcode()
 {
   ob_start();
-
-  $category = isset($_GET['category'])
-    ? (wp_unslash($_GET['category']))
+  // TODO: change link args to status
+  $category = isset($_GET['status'])
+    ? sanitize_title(wp_unslash($_GET['status']))
     : "for-sale";
 
   $term = get_term_by('slug', $category, 'es_status');
