@@ -31,17 +31,22 @@ function property_shortcode()
           <?php
           if (! empty($statuses) && ! is_wp_error($statuses)) {
           ?>
-            <p class="propert-status"><?php echo esc_html($statuses[0]->name); ?></p>
+            <p class="property-status"><?php echo strtoupper(esc_html($statuses[0]->name)); ?></p>
           <?php
           }
           ?>
-          <p><?php echo es_get_the_field('post_title', $property_id); ?></p>
-          <p><?php echo es_get_the_field('address', $property_id); ?></p>
-          <p>PHP<?php echo es_get_the_field('price', $property_id); ?></p>
+          <h3><?php echo es_get_the_field('post_title', $property_id); ?></h3>
+          <h4><?php echo es_get_the_field('address', $property_id); ?></h4>
+          <h3>PHP<?php echo es_get_the_field('price', $property_id); ?></h3>
         </div>
         <div class="property-hero-links">
-          <a href="#content">V</a>
-          <a id="view-gallery" href="#gallery">view gallery</a>
+          <a href="#content" class="chevron-circle">
+            <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.72756 5.99005C5.72756 5.49299 6.13051 5.09005 6.62756 5.09005C7.12462 5.09005 7.52756 5.49299 7.52756 5.99005H6.62756H5.72756ZM7.26396 7.26395C6.91249 7.61542 6.34264 7.61542 5.99117 7.26395L0.263603 1.53638C-0.0878692 1.18491 -0.0878692 0.615062 0.263603 0.26359C0.615075 -0.0878816 1.18492 -0.0878816 1.53639 0.26359L6.62756 5.35476L11.7187 0.26359C12.0702 -0.0878816 12.6401 -0.0878816 12.9915 0.26359C13.343 0.615062 13.343 1.18491 12.9915 1.53638L7.26396 7.26395ZM6.62756 5.99005H7.52756V6.62755H6.62756H5.72756V5.99005H6.62756Z" fill="#454545" />
+            </svg>
+
+          </a>
+          <a id="view-gallery" href="#gallery">VIEW GALLERY</a>
         </div>
       </div>
     <?php
@@ -55,8 +60,12 @@ function property_shortcode()
         <a href="#features-and-amenities">Features & Amenities</a>
       </div>
       <a href="/contact-us" class="contact-link">
-        <span>Contact Us</span>
-        >
+        <span>CONTACT US</span>
+        <div class="chevron-circle">
+          <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.98999 7.52756C5.49293 7.52756 5.08999 7.12462 5.08999 6.62756C5.08999 6.13051 5.49293 5.72756 5.98999 5.72756V6.62756V7.52756ZM7.26389 5.99117C7.61536 6.34264 7.61536 6.91249 7.26389 7.26396L1.53632 12.9915C1.18485 13.343 0.615001 13.343 0.263529 12.9915C-0.0879426 12.6401 -0.0879426 12.0702 0.263529 11.7187L5.3547 6.62756L0.263529 1.53639C-0.0879426 1.18492 -0.0879426 0.615075 0.263529 0.263603C0.615001 -0.0878692 1.18485 -0.0878692 1.53632 0.263603L7.26389 5.99117ZM5.98999 6.62756V5.72756H6.62749V6.62756V7.52756H5.98999V6.62756Z" fill="#454545" />
+          </svg>
+        </div>
       </a>
     </div>
 
@@ -65,7 +74,12 @@ function property_shortcode()
         <div class="property-description">
           <h2 id="description">Property Description</h2>
           <p id="description-text"><?php echo es_get_the_field('property-description', $property_id); ?></p>
-          <button id="description-button" type="button" onclick="readmore()">READ MORE V</button>
+          <button id="description-button" type="button" onclick="readmore()">
+            <span id="description-button-text">READ MORE</span>
+            <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.72769 5.99011C5.72769 5.49306 6.13063 5.09011 6.62769 5.09011C7.12474 5.09011 7.52769 5.49306 7.52769 5.99011H6.62769H5.72769ZM7.26408 7.26401C6.91261 7.61548 6.34276 7.61548 5.99129 7.26401L0.263725 1.53644C-0.0877471 1.18497 -0.0877471 0.615123 0.263725 0.263651C0.615197 -0.0878205 1.18505 -0.0878205 1.53652 0.263651L6.62769 5.35482L11.7189 0.263651C12.0703 -0.0878205 12.6402 -0.0878205 12.9916 0.263651C13.3431 0.615123 13.3431 1.18497 12.9916 1.53644L7.26408 7.26401ZM6.62769 5.99011H7.52769V6.62761H6.62769H5.72769V5.99011H6.62769Z" fill="white" />
+            </svg>
+          </button>
         </div>
         <div class="">
           <h2 id=" overview">Overview</h2>
@@ -142,17 +156,26 @@ function property_shortcode()
       </div>
       <div class="property-cta">
         <h3>Schedule a Tour</h3>
-        <a href="/contact-us" class="contact-link">Pick your Data and Time ></a>
-        <hr class="full-divider">
+        <a href="/contact-us" class="contact-link">
+          <h4>Pick your Date and Time</h4>
+          <div class="chevron-circle alt">
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.98999 7.52756C5.49293 7.52756 5.08999 7.12462 5.08999 6.62756C5.08999 6.13051 5.49293 5.72756 5.98999 5.72756V6.62756V7.52756ZM7.26389 5.99117C7.61536 6.34264 7.61536 6.91249 7.26389 7.26396L1.53632 12.9915C1.18485 13.343 0.615001 13.343 0.263529 12.9915C-0.0879426 12.6401 -0.0879426 12.0702 0.263529 11.7187L5.3547 6.62756L0.263529 1.53639C-0.0879426 1.18492 -0.0879426 0.615075 0.263529 0.263603C0.615001 -0.0878692 1.18485 -0.0878692 1.53632 0.263603L7.26389 5.99117ZM5.98999 6.62756V5.72756H6.62749V6.62756V7.52756H5.98999V6.62756Z" fill="white" />
+            </svg>
+          </div>
+        </a>
+        <div class="full-divider">
+          <hr>
+        </div>
         <div class="divider">
           <hr>
           or
           <hr>
         </div>
         <div class="contact-info">
-          <p>Maryanne Meily</p>
-          <p><a href="tel:+12 345 6789">+12 345 6789</a></p>
-          <p><a href="mailto:Email@gmail.com">Email@gmail.com</a></p>
+          <h4>Maryanne Meily</h4>
+          <h5><a href="tel:+12 345 6789">+12 345 6789</a></h5>
+          <h5><a href="mailto:Email@gmail.com">Email@gmail.com</a></h5>
         </div>
       </div>
     </div>
@@ -200,6 +223,17 @@ function property_shortcode()
       ?>
     </div>
 
+    <div style="width:100%;display:flex; justify-content:center;">
+      <button class="expand-button" type="button" onclick="expandGallery()">
+        <span id="gallery-button-text">VIEW MORE</span>
+        <div class="chevron-circle">
+          <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.98999 7.52756C5.49293 7.52756 5.08999 7.12462 5.08999 6.62756C5.08999 6.13051 5.49293 5.72756 5.98999 5.72756V6.62756V7.52756ZM7.26389 5.99117C7.61536 6.34264 7.61536 6.91249 7.26389 7.26396L1.53632 12.9915C1.18485 13.343 0.615001 13.343 0.263529 12.9915C-0.0879426 12.6401 -0.0879426 12.0702 0.263529 11.7187L5.3547 6.62756L0.263529 1.53639C-0.0879426 1.18492 -0.0879426 0.615075 0.263529 0.263603C0.615001 -0.0878692 1.18485 -0.0878692 1.53632 0.263603L7.26389 5.99117ZM5.98999 6.62756V5.72756H6.62749V6.62756V7.52756H5.98999V6.62756Z" fill="#454545" />
+          </svg>
+        </div>
+      </button>
+    </div>
+
     <div class="property-map empty">
       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
         <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
@@ -210,15 +244,20 @@ function property_shortcode()
     </div>
 
     <script>
+      descriptionText = document.getElementById('description-text');
+      descriptionButtonText = document.getElementById('description-button-text');
+      gallery = document.getElementById('gallery');
+      galleryButtonText = document.getElementById('gallery-button-text');
+
       function readmore() {
-        text = document.getElementById('description-text');
-        text.classList.toggle('expand');
-        button = document.getElementById('description-button');
-        button.textContent = button.textContent == 'READ MORE V' ? 'READ LESS V' : 'READ MORE V';
-        document.getElementById("description").scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
+        descriptionText.classList.toggle('expand');
+        descriptionButtonText.textContent = descriptionButtonText.textContent == 'READ MORE' ? 'READ LESS' : 'READ MORE';
+        document.getElementById("description").scrollIntoView();
+      }
+
+      function expandGallery() {
+        gallery.classList.toggle('expand');
+        galleryButtonText.textContent = galleryButtonText.textContent == 'VIEW MORE' ? 'VIEW LESS' : 'VIEW MORE';
       }
     </script>
 <?php

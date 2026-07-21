@@ -1,6 +1,19 @@
 .properties-shortcode{
   color: white !important;
 }
+.chevron-circle{
+  background-color: #ffffff;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chevron-circle.alt{
+  background-color: #4545455E;
+}
 
 .properties{
   display: grid;
@@ -251,10 +264,41 @@
 }
 
 .property-hero-links{
+  margin-top: 17px;
   position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
+}
+
+#view-gallery{
+  border: none !important;
+  border-bottom: 1px solid white !important;
+  color: white !important;
+  padding-bottom: 8px;
+}
+
+
+.property-hero-details{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.property-hero-details h3, .property-hero-details h4 , .property-hero-details p{
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.property-status{
+  border: 1px solid white;
+  width: min-content;
+  text-wrap: nowrap;
+  padding: 12px 40px;
+  border-radius: 12px;
+  font-size: 15px;
+  width: 150px;
 }
 
 #view-gallery{
@@ -273,7 +317,18 @@
 
 .property-nav-links{
   display: flex;
+  align-items: center;
   gap: 40px;
+}
+
+.contact-link{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contact-link h4{
+  font-weight: 300;
 }
 
 .property-nav a {
@@ -303,14 +358,30 @@
   gap: 63px;
 }
 
+#description-button{
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0;
+}
+
+#description-button:hover,#description-button:active{
+  color: rgb(168, 168, 168);
+  background: none;
+}
+
 #description-text {
   max-height: 9rem;
   overflow-y: hidden;
-  transition: max-height 0.25s ease-in-out;
+  transition: max-height 1s ease-in-out;
+  padding-right: 1rem;
 }
 
 #description-text.expand{
-  max-height: 100%;
+  max-height: 18rem;
+  overflow-y: scroll;
 }
 
 .property-cta{
@@ -323,8 +394,7 @@
   justify-content: space-evenly;
   text-align: center;
   flex-direction: column;
-  height: auto;
-  max-height: 400px;
+  height: min-content;
   padding: 50px 60px;
 }
 
@@ -339,43 +409,67 @@
   margin-bottom: 14px;
 }
 
+.property-cta a{
+  color:inherit;
+}
+
+.property-cta a:hover,.property-cta a:focus{
+  color: #6b6b6b5e;
+}
+
+.property-cta a:hover .chevron-circle.alt,.property-cta a:focus .chevron-circle.alt{
+  background-color: #6b6b6b5e;
+}
+
+
 .property-cta hr{
   width: 100%;
 }
 
 .full-divider{
+  width: 100%;
+  padding: 0 30px;
   margin-bottom: 22px !important;
 }
 
 .property-cta .divider{
   display: flex;
-  padding: 0 30px;
   width: 100%;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 32px;
+  font-size: 18px;
 }
 
 .property-cta .divider hr{
-  max-width: 40%;
+  max-width: 100px;
 }
 
 .property-cta .contact-info p{
   margin-bottom: 9px;
 }
 
+.property-cta .contact-info h4,.property-cta .contact-info h5{
+  font-weight: 300;
+}
+
 .property-images{
   --row-gaps:2rem;
   --row-height:300px;
+  --initial-height: calc(var(--row-height) * 3 + var(--row-gaps) * 3);
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--row-gaps);
   padding: 0 var(--content-padding-horizontal);
   grid-auto-flow: dense;
-  height: calc(var(--row-height) * 3 + var(--row-gaps) * 3);
-  /* watch this */
-  max-height: max-content;
+  max-height: var(--initial-height);
   overflow-y: hidden;
+  transition: max-height .25s ease-in-out, padding .5s ease-in-out;
+}
+
+.property-images.expand{
+  max-height: calc(var(--initial-height)*2);
+  overflow-y: scroll;
 }
 
 .property-images img{
@@ -398,6 +492,33 @@
     --column-span: 6 !important;
   }
 }
+
+.expand-button{
+  margin-top: 47px;
+  display: flex !important;
+  gap: 14px;
+  align-items: center;
+  justify-self: center;
+  border: none !important;
+  border-bottom: 1px solid white !important;
+  border-radius: 0 !important;
+  color: white !important;
+}
+
+.expand-button:hover,.expand-button:active{
+  color: #6b6b6b5e;
+  background: none !important;
+}
+
+.expand-button:hover span,.expand-button:active span{
+  color: #cacaca;
+}
+
+.expand-button:hover .chevron-circle,.expand-button:focus .chevron-circle{
+  background-color: #cacaca;
+}
+
+
 .property-map{
   display: flex;
   flex-direction: column;

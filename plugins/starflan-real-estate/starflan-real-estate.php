@@ -18,7 +18,7 @@ function starflan_real_estate_enqueue_assets()
     ' starflan_real_estate',
     plugin_dir_url(__FILE__) . 'assets/css/shortcodes.css',
     array(),
-    '1.0.0'
+    '2.0.0'
   );
 }
 add_action('wp_enqueue_scripts', 'starflan_real_estate_enqueue_assets');

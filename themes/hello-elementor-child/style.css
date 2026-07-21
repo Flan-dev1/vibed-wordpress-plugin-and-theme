@@ -54,11 +54,11 @@ Template: hello-elementor
 }
 
 button:hover {
-  background-color: #273f65 !important;
+  background-color: #273f65;
 }
 
 button:focus {
-  background-color: #1c2e4a !important;
+  background-color: #1c2e4a;
 }
 
 .swiper {
