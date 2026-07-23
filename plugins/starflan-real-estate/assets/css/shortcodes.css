@@ -18,9 +18,11 @@
 .properties{
   display: grid;
   width: 100%;
-  grid-template: repeat(1,366px) / repeat(3,1fr) ;
-  grid-auto-rows: 366px;
+  aspect-ratio: 1.25/1;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: repeat(3,1fr);
 }
+
 
 .property-card{
   --padding: 20px;
@@ -120,13 +122,16 @@
 
 @media (max-width:900px){
   .properties{
-    grid-template: repeat(1,366px) / repeat(2,1fr) ;
+    aspect-ratio: 1/1.25;
+    grid-template-columns: repeat(2,1fr);
+    grid-auto-rows: 1fr;
   }
 }
 
 @media (max-width:640px){
   .properties{
-    grid-template: repeat(1,366px) / repeat(1,1fr) ;
+    aspect-ratio: 1/4;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -352,7 +357,7 @@
 }
 
 .property-details{
-  width: 100%;
+  flex:auto;
   display: flex;
   flex-direction: column;
   gap: 63px;
@@ -385,7 +390,8 @@
 }
 
 .property-cta{
-  width: 100%;
+  height: min-content;
+  aspect-ratio: 6/1;
   border-radius: 10px;
   background-color: #F6FAFE;
   color: #454545;
@@ -394,8 +400,21 @@
   justify-content: space-evenly;
   text-align: center;
   flex-direction: column;
-  height: min-content;
   padding: 50px 60px;
+}
+
+@media (max-width: 1280px) {
+  .property-cta {
+    width: 50%;
+    padding: 40px 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .property-cta {
+    width: 100%;
+    padding: 40px 40px;
+  }
 }
 
 @media (min-width: 900px) {
@@ -404,6 +423,8 @@
     top: 80px;
   }
 }
+
+
 
 .property-cta h3,.property-cta .contact-link{
   margin-bottom: 14px;
