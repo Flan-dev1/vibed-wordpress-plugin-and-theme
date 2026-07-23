@@ -23,6 +23,9 @@ final class RecordService {
 			if ( 'relation' === $field['type'] && ( $value || ! empty( $field['required'] ) ) && ! $this->valid_relation( $value, $field['target'] ) ) {
 				return new WP_Error( 'invalid_relation', sprintf( __( '%s is invalid.', 'starflan-real-estate' ), $field['label'] ) );
 			}
+			if ( 'relations' === $field['type'] && ! $this->valid_relations( $value, $field['target'] ) ) {
+				return new WP_Error( 'invalid_relations', sprintf( __( 'One or more %s are invalid.', 'starflan-real-estate' ), $field['label'] ) );
+			}
 			if ( 'estatik_properties' === $field['type'] && ! $this->valid_estatik_properties( $value ) ) {
 				return new WP_Error( 'invalid_estatik_properties', __( 'One or more Estatik property IDs are invalid.', 'starflan-real-estate' ) );
 			}
@@ -68,6 +71,12 @@ final class RecordService {
 			if ( 'relation' === $field['type'] && ( $value || ! empty( $field['required'] ) ) && ! $this->valid_relation( $value, $field['target'] ) ) {
 				return new WP_Error( 'invalid_relation', sprintf( __( '%s is invalid.', 'starflan-real-estate' ), $field['label'] ) );
 			}
+			if ( 'relations' === $field['type'] && ! $this->valid_relations( $value, $field['target'] ) ) {
+				return new WP_Error( 'invalid_relations', sprintf( __( 'One or more %s are invalid.', 'starflan-real-estate' ), $field['label'] ) );
+			}
+			if ( 'city' === $type && 'parent_cities' === $key && CityHierarchy::would_create_cycle( $post_id, $value ) ) {
+				return new WP_Error( 'city_hierarchy_cycle', __( 'A city cannot be its own parent or a child of one of its subcities.', 'starflan-real-estate' ) );
+			}
 			if ( 'estatik_properties' === $field['type'] && ! $this->valid_estatik_properties( $value ) ) {
 				return new WP_Error( 'invalid_estatik_properties', __( 'One or more Estatik property IDs are invalid.', 'starflan-real-estate' ) );
 			}
@@ -112,6 +121,7 @@ final class RecordService {
 	public static function sanitize_value( $value, array $field ) {
 		switch ( $field['type'] ) {
 			case 'estatik_properties':
+			case 'relations':
 				$ids = is_array( $value ) ? $value : preg_split( '/[\s,;]+/', (string) $value, -1, PREG_SPLIT_NO_EMPTY );
 				return array_values( array_unique( array_filter( array_map( 'absint', $ids ) ) ) );
 			case 'media':
@@ -192,6 +202,15 @@ final class RecordService {
 	private function valid_relation( int $post_id, string $target ): bool {
 		$target_schema = Schema::get( $target );
 		return $target_schema && $target_schema['post_type'] === get_post_type( $post_id );
+	}
+
+	private function valid_relations( array $post_ids, string $target ): bool {
+		foreach ( $post_ids as $post_id ) {
+			if ( ! $this->valid_relation( (int) $post_id, $target ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private function valid_estatik_properties( array $post_ids ): bool {

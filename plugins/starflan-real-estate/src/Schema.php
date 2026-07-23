@@ -19,6 +19,7 @@ final class Schema {
 				'fields'      => array(
 					'name'       => array( 'label' => __( 'Name', 'starflan-real-estate' ), 'type' => 'text', 'storage' => 'post_title', 'required' => true ),
 					'image'      => array( 'label' => __( 'Image', 'starflan-real-estate' ), 'type' => 'media', 'storage' => 'meta', 'meta_key' => '_sf_image_id' ),
+					'parent_cities' => array( 'label' => __( 'Parent Cities', 'starflan-real-estate' ), 'type' => 'relations', 'storage' => 'meta', 'meta_key' => '_sf_parent_city_ids', 'target' => 'city' ),
 					'properties' => array( 'label' => __( 'Estatik Properties', 'starflan-real-estate' ), 'type' => 'estatik_properties', 'storage' => 'meta', 'meta_key' => '_sf_estatik_property_ids' ),
 				),
 			),

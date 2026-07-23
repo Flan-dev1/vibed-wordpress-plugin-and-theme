@@ -37,7 +37,7 @@ final class PostTypeRegistrar {
 			if ( 'meta' !== $field['storage'] ) {
 				continue;
 			}
-			$type = 'number' === $field['type'] ? 'number' : ( 'estatik_properties' === $field['type'] ? 'array' : ( in_array( $field['type'], array( 'media', 'relation' ), true ) ? 'integer' : 'string' ) );
+			$type = 'number' === $field['type'] ? 'number' : ( in_array( $field['type'], array( 'estatik_properties', 'relations' ), true ) ? 'array' : ( in_array( $field['type'], array( 'media', 'relation' ), true ) ? 'integer' : 'string' ) );
 			$show_in_rest = 'array' === $type
 				? array( 'schema' => array( 'type' => 'array', 'items' => array( 'type' => 'integer' ) ) )
 				: true;
