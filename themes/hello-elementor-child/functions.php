@@ -139,9 +139,62 @@ add_shortcode('page_title', 'custom_page_title_shortcode');
 function get_featured_listings()
 {
   ob_start();
+
+  $featured_properties = new WP_Query(
+    array(
+      'post_type'      => 'properties',
+      'post_status'    => 'publish',
+      'posts_per_page' => -1,
+      'orderby'        => 'date',
+      'order'          => 'DESC',
+      'tax_query'      => array(
+        array(
+          'taxonomy' => 'es_label',
+          'field'    => 'slug',
+          'terms'    => array('featured'),
+        ),
+      ),
+    )
+  );
+
 ?>
   <div class="swiper featured">
-    <div class="swiper-wrapper" id="featured-wrapper"></div>
+    <div class="swiper-wrapper" id="featured-wrapper">
+      <?php
+      while ($featured_properties->have_posts()) {
+        $featured_properties->the_post();
+
+        $property_id  = get_the_ID();
+        $property     = es_get_property($property_id);
+        $property_url = add_query_arg(
+          'property',
+          $property_id,
+          home_url('/single-property/')
+        );
+        $image_ids = (array) es_get_the_field('gallery', $property_id);
+        $image_id  = $image_ids[0] ?? get_post_thumbnail_id($property_id);
+        $image_url = $image_id
+          ? wp_get_attachment_image_url($image_id, 'full')
+          : '';
+      ?>
+        <div class="swiper-slide">
+          <div class="slide-wrapper">
+            <div class="slide-overlay"></div>
+            <img
+              src="<?php echo esc_url($image_url); ?>"
+              alt="<?php echo esc_attr(get_the_title($property_id)); ?>"
+              class="featured-image">
+            <div class="featured-details">
+              <div>PHP<?php echo esc_html($property->price); ?></div>
+              <div><?php echo esc_html(get_the_title($property_id)); ?></div>
+            </div>
+          </div>
+        </div>
+      <?php
+      }
+      wp_reset_postdata();
+      ?>
+    </div>
     <div class="swiper-button-prev featured">
       <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1.5376 7.52756C2.03465 7.52756 2.4376 7.12462 2.4376 6.62756C2.4376 6.13051 2.03465 5.72756 1.5376 5.72756V6.62756V7.52756ZM0.263702 5.99117C-0.0877702 6.34264 -0.0877702 6.91249 0.263702 7.26396L5.99127 12.9915C6.34274 13.343 6.91259 13.343 7.26406 12.9915C7.61553 12.6401 7.61553 12.0702 7.26406 11.7187L2.17289 6.62756L7.26406 1.53639C7.61553 1.18492 7.61553 0.615075 7.26406 0.263603C6.91259 -0.0878692 6.34274 -0.0878692 5.99127 0.263603L0.263702 5.99117ZM1.5376 6.62756V5.72756H0.900098L0.900098 6.62756L0.900098 7.52756H1.5376V6.62756Z" fill="#454545" />
@@ -155,16 +208,58 @@ function get_featured_listings()
     <a href="/properties"><button class="cta cta-properties">View All Properties</button></a>
   </div>
 <?php
-
   return ob_get_clean();
 }
 
 function get_cities_slider()
 {
   ob_start();
+
+  $cities = get_posts(
+    array(
+      'post_type'      => 'sf_city',
+      'post_status'    => 'publish',
+      'orderby'        => 'title',
+      'order'          => 'ASC',
+    )
+  );
+
 ?>
   <div class="swiper cities">
-    <div class="swiper-wrapper" id="cities-wrapper"></div>
+    <div class="swiper-wrapper" id="cities-wrapper">
+      <?php
+      foreach ($cities as $city) {
+        $city_id = $city->ID;
+        $name = get_the_title($city_id);
+        $image_id = (int) get_post_meta($city_id, '_sf_image_id', true);
+        $city_url = add_query_arg(
+          'city-id',
+          $city_id,
+          home_url('/properties/')
+        );
+        $image = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
+
+      ?>
+        <a href="<?php echo esc_url($city_url); ?>" class="swiper-slide city">
+          <div class="slide-wrapper">
+            <img class="city-image" src="<?php echo esc_url($image); ?>"
+              alt="<?php
+                    echo esc_attr(
+                      sprintf(
+                        'Properties in %s',
+                        $name
+                      )
+                    );
+                    ?>">
+            </img>
+            <div class="slide-overlay"></div>
+            <div class="city-details"><?php echo esc_html($name); ?></div>
+          </div>
+        </a>
+      <?php
+      }
+      ?>
+    </div>
     <div class="swiper-button-prev cities">
       <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1.5376 7.52756C2.03465 7.52756 2.4376 7.12462 2.4376 6.62756C2.4376 6.13051 2.03465 5.72756 1.5376 5.72756V6.62756V7.52756ZM0.263702 5.99117C-0.0877702 6.34264 -0.0877702 6.91249 0.263702 7.26396L5.99127 12.9915C6.34274 13.343 6.91259 13.343 7.26406 12.9915C7.61553 12.6401 7.61553 12.0702 7.26406 11.7187L2.17289 6.62756L7.26406 1.53639C7.61553 1.18492 7.61553 0.615075 7.26406 0.263603C6.91259 -0.0878692 6.34274 -0.0878692 5.99127 0.263603L0.263702 5.99117ZM1.5376 6.62756V5.72756H0.900098L0.900098 6.62756L0.900098 7.52756H1.5376V6.62756Z" fill="#454545" />
