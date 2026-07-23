@@ -84,6 +84,10 @@ button:focus {
 
 .slide-wrapper {
   width: 100%;
+  height: 100%;
+}
+
+#featured-wrapper{
   height: 100svh;
 }
 
@@ -167,7 +171,7 @@ button:focus {
 
 .city-image {
   width: 100%;
-  height: 100% !important;
+  height: inherit !important;
   object-fit: cover;
 }
 
@@ -282,19 +286,85 @@ header {
 .site-header {
   transition:
     background-color 250ms ease,
-    backdrop-filter 250ms ease,
     -webkit-backdrop-filter 250ms ease,
     box-shadow 250ms ease,
     border-color 250ms ease;
 }
 
-.header--blurred {
+.site-header.header--scrolled {
   position: relative;
-  background-color: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px); /* Safari */
-
+  background-color: rgb(255, 255, 255);
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+}
+
+.site-header.header--scrolled .site-title a{
+  color: #000;
+}
+
+.site-header.header--scrolled .site-navigation ul.menu li a{
+  color: #000;
+}
+
+.site-header.site-header svg{
+  color: #fff;
+}
+
+.site-navigation ul.menu li ul.sub-menu {
+  border-radius: 10px;
+  background-color: rgba(82, 103, 125, 0.81);
+  opacity: 0;
+  display: inline;
+  pointer-events: none;
+  height: auto;
+  max-height: 160px;
+  overflow-y: scroll;
+  transition: opacity 250ms ease;
+}
+
+.site-navigation ul.menu li:hover > ul.sub-menu{
+  pointer-events: auto;
+  opacity: 100%;
+}
+
+.site-header.header--scrolled .site-navigation ul.menu li ul.sub-menu a{
+  color: #fff;
+}
+
+.site-header.header--scrolled .site-navigation ul.menu li ul.sub-menu a{
+  color: #fff;
+}
+
+.site-navigation ul.menu li ul li{
+  border-block-end: none !important;
+}
+
+.site-header.header--scrolled svg{
+  color: #000;
+}
+
+.site-header .site-navigation ul.menu li.menu-item-has-children::after{
+  content: "";
+  width: 12px;
+  height: 7px;
+  align-self: center;
+
+  background-color: currentColor;
+
+  mask: url(./dropdown.svg) center / contain no-repeat;
+  -webkit-mask: url(./dropdown.svg) center / contain no-repeat;
+
+  color: #fff;
+}
+
+.site-header.header--scrolled .site-navigation ul.menu li.menu-item-has-children::after{
+  color: #000;
+}
+
+@media (min-width: 1300px){
+  .site-header .header-inner{
+    margin-inline-end: 80px;
+    margin-inline-start: 80px;
+  }
 }
 
 /* SITE SIDE NAV */

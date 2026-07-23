@@ -1,12 +1,39 @@
 import { initFeaturedSlider } from "./featuredSlider.js";
 import { initCitiesSlider } from "./citiesSlider.js";
 
-function init() {
-  //console.log(propertyData); //logging meta data
-  // fetch("/wp-json/wp/v2/properties")
-  //   .then((res) => res.json())
-  //   .then((data) => console.log(data));
+window.renderNavCities = function renderNavCities(cities) {
+  const placeholder = document.querySelector(".side-nav-cities");
 
+  if (!placeholder || !Array.isArray(cities)) {
+    return;
+  }
+
+  cities.forEach((city) => {
+    const link = document.createElement("a");
+    link.className = "link";
+    link.href = city.url;
+    link.textContent = city.name;
+    placeholder.parentNode.insertBefore(link, placeholder);
+  });
+
+  placeholder.remove();
+
+  const nav = document.querySelector('ul.sub-menu');
+  nav.firstElementChild.remove();
+
+
+  cities.forEach((city) => {
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.className = "link";
+    link.href = city.url;
+    link.textContent = city.name;
+    item.appendChild(link);
+    nav.appendChild(item);
+  });
+};
+
+function init() {
   initNavMenu();
   initHeaderBlur();
   if (window.location.pathname === `/` || window.location.pathname === ``) {
@@ -27,7 +54,7 @@ function initHeaderBlur() {
   const header = document.querySelector(".site-header");
 
   function updateHeaderBlur() {
-    header.classList.toggle("header--blurred", window.scrollY > 0);
+    header.classList.toggle("header--scrolled", window.scrollY > 0);
   }
 
   window.addEventListener("scroll", updateHeaderBlur, { passive: true });
