@@ -45,6 +45,9 @@ function properties_shortcode()
   <?php
   } else {
     $per_page = 9;
+	$current_page = isset($_GET['page'])
+	  ? max(1, absint(wp_unslash($_GET['page'])))
+	  : max(1, (int) get_query_var('paged'));
 
     $city_id = isset($_GET['city-id'])
       ? absint(wp_unslash($_GET['city-id']))
@@ -54,7 +57,7 @@ function properties_shortcode()
       array(
         'query' => array(
           'posts_per_page' => $per_page,
-          'paged'          => max(1, get_query_var('paged')),
+          'paged'          => $current_page,
         ),
         'fields' => array(
           'es_status' => $term ? array($term->term_id) : array(0),
@@ -63,27 +66,9 @@ function properties_shortcode()
       )
     );
 
-    // Apply the StarFlan city filter when a valid city is selected.
+    // A parent city includes properties assigned to all descendants at any depth.
     if ($city_id && 'sf_city' === get_post_type($city_id)) {
-      echo 'true';
-      $city_property_ids = array_values(
-        array_filter(
-          array_map(
-            'absint',
-            (array) get_post_meta(
-              $city_id,
-              '_sf_estatik_property_ids',
-              true
-            )
-          )
-        )
-      );
-
-      /*
-	 * An empty post__in array means "no restriction" in WordPress,
-	 * so use array( 0 ) when the city has no assigned properties.
-	 */
-      $query_args['post__in'] = $city_property_ids ?: array(0);
+      $query_args = \StarFlan\RealEstate\CityHierarchy::filter_property_query_args($query_args, $city_id);
     }
 
     $properties = new WP_Query($query_args);
@@ -164,17 +149,20 @@ function properties_shortcode()
 
     require_once plugin_dir_path(__FILE__) . 'pagination.php';
 
-    $count = wp_count_posts('properties');
-
-    $total_properties = isset($count->publish) ? (int) $count->publish : 0;
-
-    $total_pages  = (int) ceil($total_properties / $per_page);
-
-    $current_page = isset($_GET['page'])
-      ? (wp_unslash($_GET['page']))
-      : "1";
-
-    $properties_page_url = home_url('/properties-list/');
+	$total_pages = (int) $properties->max_num_pages;
+	$properties_page_url = add_query_arg(
+	  array_filter(
+		array(
+		  'status'  => $category,
+		  'sort'    => $current_sort,
+		  'city-id' => $city_id ?: null,
+		),
+		static function ($value) {
+		  return null !== $value && '' !== $value;
+		}
+	  ),
+	  home_url('/properties-list/')
+	);
     add_pagination($properties_page_url, $total_pages, $current_page);
   }
 

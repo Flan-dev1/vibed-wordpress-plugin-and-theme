@@ -210,6 +210,15 @@ final class AdminPage
       echo '<p class="description">' . esc_html__('Search Estatik listings, then add one or more properties to this city.', 'starflan-real-estate') . '</p></div>';
     } elseif ('textarea' === $field['type']) {
       echo '<textarea class="large-text" rows="5" id="' . esc_attr($id) . '" name="starflan[' . esc_attr($key) . ']"' . $required . '>' . esc_textarea($value) . '</textarea>';
+    } elseif ('relations' === $field['type']) {
+      $target = Schema::get($field['target']);
+      $posts = get_posts(array('post_type' => $target['post_type'], 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC'));
+      $selected_ids = is_array($value) ? array_map('absint', $value) : array();
+      echo '<select class="regular-text" id="' . esc_attr($id) . '" name="starflan[' . esc_attr($key) . '][]" multiple size="8"' . $required . '>';
+      foreach ($posts as $post) {
+        echo '<option value="' . esc_attr($post->ID) . '"' . selected(in_array((int) $post->ID, $selected_ids, true), true, false) . '>' . esc_html($post->post_title) . ' (#' . esc_html($post->ID) . ')</option>';
+      }
+      echo '</select><p class="description">' . esc_html__('Use Ctrl/Command to select multiple parent cities. A city may not contain itself or create a hierarchy cycle.', 'starflan-real-estate') . '</p>';
     } elseif ('relation' === $field['type']) {
       $target = Schema::get($field['target']);
       $posts = get_posts(array('post_type' => $target['post_type'], 'post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC'));

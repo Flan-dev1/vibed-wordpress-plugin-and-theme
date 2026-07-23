@@ -19,6 +19,8 @@ final class Plugin {
 		$admin = new AdminPage( $records );
 
 		add_action( 'init', array( $registrar, 'register' ) );
+		add_action( 'rest_api_init', array( CityHierarchy::class, 'register_rest_fields' ) );
+		add_filter( 'rest_pre_insert_sf_city', array( CityHierarchy::class, 'validate_rest_hierarchy' ), 10, 2 );
 		add_action( 'add_meta_boxes', array( $meta_boxes, 'register' ) );
 		add_action( 'save_post', array( $meta_boxes, 'save' ), 10, 2 );
 		add_action( 'admin_menu', array( $admin, 'menu' ) );
