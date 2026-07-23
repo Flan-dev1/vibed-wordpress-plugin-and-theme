@@ -4,6 +4,24 @@ if (! defined('ABSPATH')) {
 }
 
 if (! function_exists('elementor_theme_do_location') || ! elementor_theme_do_location('footer')) :
+  $city_posts = get_posts([
+    'post_type'      => 'sf_city',
+    'post_status'    => 'publish',
+    'posts_per_page' => 21,
+    'orderby'        => 'title',
+    'order'          => 'ASC',
+  ]);
+
+  $cities = array_map(
+    static function ($city) {
+      return [
+        'id'   => (int) $city->ID,
+        'name' => get_the_title($city),
+        'url'  => add_query_arg('city-id', (int) $city->ID, home_url('/properties/')),
+      ];
+    },
+    $city_posts
+  );
 ?>
   <footer class="site-footer">
     <div class="footer-container">
@@ -15,46 +33,34 @@ if (! function_exists('elementor_theme_do_location') || ! elementor_theme_do_loc
       <div class="footer-column">
         <p style="font-weight:500;margin-bottom:24px">Cities</p>
         <div class="footer-cities">
-          <a href="">Makati</a>
-          <a href="">Manila</a>
-          <a href="">BGC</a>
-          <a href="">Muntinlupa</a>
-          <a href="">Alabang Village</a>
-          <a href="">Hillsborough</a>
-          <a href="">Alabang Hills</a>
-          <a href="">Parañaque</a>
-          <a href="">Sucat</a>
-          <a href="">Better Living</a>
-          <a href="">BF Homes</a>
-          <a href="">Siargao</a>
-          <a href="">Palawan</a>
-          <a href="">El Nido</a>
-          <a href="">Coron</a>
-          <a href="">Puerto Prinsesa</a>
-          <a href="">Tagaytay</a>
-          <a href="">Cavite</a>
-          <a href="">Batangas</a>
+          <?php
+          foreach ($cities as $city) {
+          ?>
+            <a href="<?php echo esc_url($city['url']) ?>"><?php echo esc_html($city['name']) ?></a>
+          <?php
+          }
+          ?>
         </div>
         <hr>
         <div class="footer-links">
           <div class="link-column">
             <p style="font-weight:500">Services</p>
-            <a href="">Buy</a>
-            <a href="">Rent</a>
-            <a href="">Sell</a>
+            <a href="/properties/?category=for-sale">Buy</a>
+            <a href="/properties/?category=for-rent">Rent</a>
+            <a href="/sell">Sell</a>
           </div>
           <div class="link-column">
             <p style="font-weight:500">Who we are</p>
-            <a href="">About</a>
-            <a href="">Testimonials</a>
+            <a href="/about">About</a>
+            <a href="/testimonials">Testimonials</a>
           </div>
           <div class="link-column">
             <p style="font-weight:500">Phone</p>
-            <a href="">+12 345 6789</a>
+            <a href="tel:+12 345 6789">+12 345 6789</a>
           </div>
           <div class="link-column">
             <p style="font-weight:500">Email</p>
-            <a href="">email@gmail.com</a>
+            <a href="mailto:email@gmail.com">email@gmail.com</a>
           </div>
         </div>
 
